@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Einladung</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{background:#000;-webkit-text-size-adjust:none;}
+body{
+  background:#000;
+  height:700vh;
+  overscroll-behavior:none;
+  -webkit-tap-highlight-color:transparent;
+}
+
+#stage{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  height:100dvh;
+  overflow:hidden;
+}
+
+#fx{
+  position:absolute;
+  inset:0;
+  width:100%;height:100%;
+  pointer-events:none;
+  z-index:20;
+}
+
+.bg-grid{
+  position:absolute;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);
+  background-size:58px 58px;
+  pointer-events:none;
+  z-index:0;
+}
+
+.scene{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:1;
+  will-change:opacity;
+}
+
+/* ── SCENE 1 ─────────────────────── */
+#env-svg{
+  width:min(300px,82vw);
+  height:auto;
+  overflow:visible;
+  will-change:transform;
+}
+
+/* ── SCENE 2 ─────────────────────── */
+#s2-inner{
+  position:relative;
+  width:min(340px,92vw);
+  height:62vh;
+}
+
+#paper-grate{
+  position:absolute;
+  left:8%;
+  top:20%;
+  width:30%;
+  transform-origin:center center;
+  will-change:transform,opacity;
+}
+
+#grater-svg{
+  position:absolute;
+  right:8%;
+  top:10%;
+  width:min(88px,22vw);
+  height:auto;
+}
+
+@keyframes graterShake{
+  0%,100%{transform:none}
+  20%{transform:translateX(2px) rotate(.4deg)}
+  60%{transform:translateX(-2px) rotate(-.4deg)}
+}
+#grater-svg.shaking{animation:graterShake .1s ease-in-out infinite;}
+
+#pile-txt{
+  position:absolute;
+  bottom:10%;
+  left:50%;
+  transform:translateX(-50%);
+  white-space:nowrap;
+  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-weight:100;
+  font-size:clamp(11px,3vw,15px);
+  letter-spacing:.3em;
+  color:rgba(255,255,255,.9);
+  opacity:0;
+  transition:opacity .2s;
+}
+
+/* ── SCENE 3 ─────────────────────── */
+#cta-wrap{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:28px;
+}
+
+#cta-label{
+  font-family:'Helvetica Neue',Helvetica,sans-serif;
+  font-weight:100;
+  font-size:clamp(9px,2.2vw,12px);
+  letter-spacing:.55em;
+  color:rgba(255,255,255,.35);
+  text-transform:uppercase;
+}
+
+#cta-btn{
+  pointer-events:none;
+  display:inline-block;
+  padding:16px 48px;
+  border:1px solid rgba(255,255,255,.82);
+  color:white;
+  text-decoration:none;
+  font-family:'Helvetica Neue',Helvetica,sans-serif;
+  font-weight:200;
+  font-size:clamp(12px,3.8vw,16px);
+  letter-spacing:.44em;
+  text-transform:uppercase;
+  position:relative;
+  overflow:hidden;
+  touch-action:manipulation;
+  opacity:0;
+  transform:scale(.78);
+  transition:opacity .55s ease,transform .55s ease;
+}
+
+#cta-btn::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:white;
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform .36s cubic-bezier(.4,0,.2,1);
+  z-index:0;
+}
+#cta-btn:hover::before,
+#cta-btn:active::before{transform:scaleX(1);}
+#cta-btn .t{
+  position:relative;
+  z-index:1;
+  mix-blend-mode:difference;
+}
+
+/* ── SCROLL ARROW ────────────────── */
+#sa{
+  position:fixed;
+  bottom:calc(22px + env(safe-area-inset-bottom,0px));
+  left:50%;
+  transform:translateX(-50%);
+  z-index:200;
+  pointer-events:none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:3px;
+  transition:opacity .7s ease;
+}
+.sa-l{
+  width:1px;height:30px;
+  background:white;
+  animation:saA 2.1s ease-in-out infinite;
+}
+.sa-c{animation:saA 2.1s ease-in-out infinite .16s;}
+@keyframes saA{
+  0%{opacity:0;transform:translateY(-7px);}
+  35%{opacity:.75;}
+  65%{opacity:.4;transform:translateY(3px);}
+  100%{opacity:0;transform:translateY(10px);}
+}
+
+/* ── INTRO DRAW-ON ───────────────── */
+#env-svg path, #env-svg rect, #env-svg polyline, #env-svg line{
+  stroke-dasharray:2000;
+  stroke-dashoffset:2000;
+  animation:drawIn 1.6s ease forwards;
+}
+#env-svg path:nth-child(1){animation-delay:.1s;}
+#env-svg path:nth-child(2){animation-delay:.4s;}
+#env-svg rect.env-outer{animation-delay:.0s;}
+#env-svg polyline{animation-delay:.7s;}
+#env-svg #flap{animation-delay:.5s;}
+@keyframes drawIn{
+  to{stroke-dashoffset:0;}
+}
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div class="bg-grid"></div>
+  <canvas id="fx"></canvas>
+
+  <!-- ── SCENE 1: ENVELOPE ──────────────────── -->
+  <div class="scene" id="s1">
+    <svg id="env-svg" viewBox="0 0 300 250" fill="none" overflow="visible" xmlns="http://www.w3.org/2000/svg">
+
+      <!-- Paper (rendered first = behind envelope) -->
+      <g id="pg" transform="translate(0,158)" style="stroke-dasharray:none;stroke-dashoffset:0;animation:none;">
+        <!-- Paper body -->
+        <rect x="82" y="-92" width="136" height="162" fill="#000"
+          stroke="rgba(255,255,255,.82)" stroke-width=".9" rx="1"/>
+        <!-- Paper fold lines -->
+        <line x1="92" y1="-48" x2="208" y2="-48" stroke="rgba(255,255,255,.25)" stroke-width=".5"/>
+        <line x1="92" y1="-22" x2="208" y2="-22" stroke="rgba(255,255,255,.25)" stroke-width=".5"/>
+        <line x1="92" y1="4"   x2="208" y2="4"   stroke="rgba(255,255,255,.25)" stroke-width=".5"/>
+        <line x1="92" y1="30"  x2="208" y2="30"  stroke="rgba(255,255,255,.25)" stroke-width=".5"/>
+        <!-- Invited text -->
+        <text id="itxt" x="150" y="-64" text-anchor="middle"
+          font-family="Georgia,'Times New Roman',serif" font-style="italic"
+          font-size="14" fill="white" opacity="0"
+          style="stroke-dasharray:none;stroke-dashoffset:0;animation:none;">You&#8217;re invited!</text>
+      </g>
+
+      <!-- Envelope fill mask (covers paper when inside) -->
+      <rect x="0" y="0" width="300" height="250" fill="#000"
+        style="stroke:none;stroke-dasharray:none;stroke-dashoffset:0;animation:none;"/>
+
+      <!-- Envelope outer stroke -->
+      <rect class="env-outer" x=".5" y=".5" width="299" height="249"
+        fill="none" stroke="white" stroke-width="1.3"/>
+
+      <!-- Bottom V fold -->
+      <polyline points=".5,249.5 150,168 299.5,249.5"
+        fill="none" stroke="rgba(255,255,255,.4)" stroke-width=".9"/>
+
+      <!-- Flap -->
+      <path id="flap" d="M .5 .5 L 299.5 .5 L 150 94 Z"
+        fill="#000" stroke="white" stroke-width="1.3"/>
+
+    </svg>
+  </div>
+
+  <!-- ── SCENE 2: GRATER ──────────────────── -->
+  <div class="scene" id="s2" style="opacity:0">
+    <div id="s2-inner">
+
+      <!-- Paper being grated -->
+      <div id="paper-grate">
+        <svg viewBox="0 0 120 148" fill="none">
+          <rect x=".5" y=".5" width="119" height="147"
+            stroke="rgba(255,255,255,.8)" stroke-width=".9" rx="1" fill="#000"/>
+          <line x1="10" y1="46"  x2="110" y2="46"  stroke="rgba(255,255,255,.25)" stroke-width=".5"/>
+          <line x1="10" y1="70"  x2="110" y2="70"  stroke="rgba(255,255,255,.25)" stroke-width=".5"/>
+          <line x1="10" y1="94"  x2="110" y2="94"  stroke="rgba(255,255,255,.25)" stroke-width=".5"/>
+          <text x="60" y="26" text-anchor="middle"
+            font-family="Georgia,serif" font-style="italic" font-size="12" fill="white">
+            You&#8217;re invited!</text>
+        </svg>
+      </div>
+
+      <!-- Grater -->
+      <svg id="grater-svg" viewBox="0 0 80 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Handle -->
+        <rect x="22" y="1" width="36" height="24" rx="5" stroke="white" stroke-width="1.1"/>
+        <!-- Body -->
+        <rect x="4" y="23" width="72" height="175" rx="2" stroke="white" stroke-width="1.1"/>
+        <!-- Hole rows (staggered) -->
+        <ellipse cx="22" cy="42" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="40" cy="42" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="58" cy="42" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="31" cy="56" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="49" cy="56" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="22" cy="70" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="40" cy="70" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="58" cy="70" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="31" cy="84" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="49" cy="84" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="22" cy="98" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="40" cy="98" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="58" cy="98" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="31" cy="112" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="49" cy="112" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="22" cy="126" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="40" cy="126" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="58" cy="126" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="31" cy="140" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="49" cy="140" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="22" cy="154" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="40" cy="154" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="58" cy="154" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="31" cy="168" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="49" cy="168" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="22" cy="182" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="40" cy="182" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+        <ellipse cx="58" cy="182" rx="6" ry="3.2" stroke="white" stroke-width=".75"/>
+      </svg>
+
+      <div id="pile-txt">&#8230;zum Parmesan reiben</div>
+    </div>
+  </div>
+
+  <!-- ── SCENE 3: CTA ──────────────────── -->
+  <div class="scene" id="s3" style="opacity:0">
+    <div id="cta-wrap">
+      <p id="cta-label">Du bist dabei?</p>
+      <a id="cta-btn"
+        href="mailto:michiz@online.de?subject=Zusage%3A%20Kulinarik%20pt.%202&body=Sehr%20geehrter%20Herr%20Zandler%2C%0A%0Agerne%20nehme%20ich%20den%20Termin%20am%20Freitag%20ab%2018%20Uhr%20wahr.%0A%0AMit%20freundlichen%20Gr%C3%BC%C3%9Fen%0AElena%20M%C3%A4rz"
+        target="_blank">
+        <span class="t">Jetzt zusagen</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ── SCROLL ARROW ───────────────── -->
+<div id="sa">
+  <div class="sa-l"></div>
+  <svg class="sa-c" width="14" height="8" viewBox="0 0 14 8" fill="none">
+    <path d="M1 1L7 7L13 1" stroke="white" stroke-width="1.1"
+      stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</div>
+
+<script>
+// ─── REFS ──────────────────────────────────────────────
+const canvas  = document.getElementById('fx');
+const X       = canvas.getContext('2d');
+const s1      = document.getElementById('s1');
+const s2      = document.getElementById('s2');
+const s3      = document.getElementById('s3');
+const pgEl    = document.getElementById('pg');
+const flapEl  = document.getElementById('flap');
+const itxtEl  = document.getElementById('itxt');
+const pGrate  = document.getElementById('paper-grate');
+const graterSvg = document.getElementById('grater-svg');
+const pileTxt = document.getElementById('pile-txt');
+const ctaBtn  = document.getElementById('cta-btn');
+const saEl    = document.getElementById('sa');
+
+// ─── RESIZE ───────────────────────────────────────────
+function resize(){ canvas.width=innerWidth; canvas.height=innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+
+// ─── MATH ─────────────────────────────────────────────
+const ease  = t => t<.5?2*t*t:-1+(4-2*t)*t;
+const clamp = (v,lo=0,hi=1)=>Math.min(hi,Math.max(lo,v));
+const map   = (v,a,b,lo=0,hi=1)=>lo+(hi-lo)*clamp((v-a)/(b-a));
+
+// ─── PARTICLE STATE ───────────────────────────────────
+const shreds   = [];
+let pileP      = 0;
+let lastS2p    = 0;
+let expParts   = null;
+let expRing    = null;
+let expDone    = true;
+let expFired   = false;
+
+function spawnShreds(rx, ry, rw, rh, n) {
+  if (shreds.length > 160) return;
+  for (let i = 0; i < n; i++) {
+    shreds.push({
+      x: rx + rw * (.04 + Math.random() * .34),
+      y: ry + rh * (.18 + Math.random() * .5),
+      vx: (Math.random() - .72) * 3.2,
+      vy: Math.random() * 2.2 + .4,
+      w:  4 + Math.random() * 13,
+      h:  .8 + Math.random() * 2.8,
+      angle: Math.random() * Math.PI,
+      alpha: .6 + Math.random() * .4,
+      done: false
+    });
+  }
+}
+
+function boom() {
+  const cx = canvas.width / 2, cy = canvas.height / 2;
+  expParts = [];
+  for (let i = 0; i < 120; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const s = 1.5 + Math.random() * 10;
+    expParts.push({
+      x: cx, y: cy,
+      vx: Math.cos(a) * s, vy: Math.sin(a) * s,
+      alpha: 1,
+      dec: .011 + Math.random() * .026,
+      sz: .8 + Math.random() * 5.5
+    });
+  }
+  expRing = { r: 0, alpha: .95 };
+  expDone = false;
+}
+
+// ─── RENDER ───────────────────────────────────────────
+function draw() {
+  X.clearRect(0, 0, canvas.width, canvas.height);
+  const s2op = parseFloat(s2.style.opacity) || 0;
+  const floor = canvas.height * .79;
+
+  // Shred particles
+  if (s2op > .02) {
+    for (const p of shreds) {
+      if (!p.done) {
+        p.x += p.vx; p.y += p.vy;
+        p.vy += .14; p.vx *= .983;
+        const f = floor + (Math.random() - .5) * canvas.height * .06;
+        if (p.y >= f) p.done = true;
+      }
+      if (p.alpha <= 0) continue;
+      X.save();
+      X.translate(p.x, p.y); X.rotate(p.angle);
+      X.globalAlpha = p.alpha * s2op;
+      X.fillStyle = 'white';
+      X.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      X.restore();
+    }
+    // Pile
+    if (pileP > 0) drawPile(s2op);
+  }
+
+  // Explosion
+  if (!expDone && expParts) {
+    let alive = false;
+    for (const p of expParts) {
+      if (p.alpha <= 0) continue;
+      alive = true;
+      p.x += p.vx; p.y += p.vy; p.vy += .09; p.alpha -= p.dec;
+      X.save(); X.globalAlpha = Math.max(0, p.alpha);
+      X.fillStyle = 'white';
+      X.fillRect(p.x - p.sz/2, p.y - p.sz/2, p.sz, p.sz);
+      X.restore();
+    }
+    if (expRing && expRing.alpha > 0) {
+      expRing.r += 10; expRing.alpha -= .042;
+      X.save(); X.globalAlpha = Math.max(0, expRing.alpha);
+      X.strokeStyle = 'white'; X.lineWidth = 1.2;
+      X.beginPath(); X.arc(canvas.width/2, canvas.height/2, expRing.r, 0, Math.PI*2); X.stroke();
+      X.restore();
+    }
+    if (!alive && (!expRing || expRing.alpha <= 0)) expDone = true;
+  }
+
+  requestAnimationFrame(draw);
+}
+
+function drawPile(op) {
+  const cx = canvas.width  * .44;
+  const by = canvas.height * .80;
+  const pw = canvas.width  * .21 * pileP;
+  const ph = canvas.height * .09 * pileP;
+
+  X.save();
+  X.strokeStyle = 'white'; X.lineWidth = .9;
+  X.globalAlpha = op * .88;
+  X.beginPath();
+  X.moveTo(cx - pw, by);
+  X.bezierCurveTo(cx - pw*.72, by - ph, cx + pw*.72, by - ph, cx + pw, by);
+  X.stroke();
+
+  const n = Math.floor(pileP * 42);
+  for (let i = 0; i < n; i++) {
+    const sd = i * 6.3;
+    const px = cx - pw * .88 + (Math.sin(sd) * .5 + .5) * pw * 1.76;
+    const py = by - (Math.cos(sd * 1.3) * .4 + .38) * ph * .82;
+    const ln = 2.5 + Math.abs(Math.sin(sd * 2.1)) * 9;
+    const ang = Math.sin(sd * .88) * .72;
+    X.globalAlpha = op * (.12 + Math.abs(Math.sin(sd * 3.2)) * .12);
+    X.lineWidth = .45;
+    X.beginPath();
+    X.moveTo(px, py);
+    X.lineTo(px + Math.cos(ang) * ln, py + Math.sin(ang) * ln * .38);
+    X.stroke();
+  }
+  X.restore();
+}
+
+draw();
+
+// ─── SCENE ANIMATIONS ─────────────────────────────────
+
+function animS1(p) {
+  // Flap opens: 0→0.46 (perspective narrowing)
+  const fp  = ease(clamp(p / .46));
+  const per = Math.sin(fp * Math.PI) * 58;
+  const fy  = 94 - fp * 182;
+  flapEl.setAttribute('d', `M ${per+.5} .5 L ${299.5-per} .5 L 150 ${fy} Z`);
+
+  // Paper rises: 0.42→0.92
+  const pp = ease(map(p, .42, .92));
+  const py = 158 - pp * 215;
+  pgEl.setAttribute('transform', `translate(0,${py})`);
+
+  // Text: 0.76→0.96
+  itxtEl.setAttribute('opacity', map(p, .76, .96));
+}
+
+function animS2(p) {
+  // Paper grates: 0→0.68
+  const gp  = ease(clamp(p / .68));
+  const lf  = 8 + gp * 42;
+  const sc  = 1 - gp * .74;
+  const rot = gp * (-16);
+  pGrate.style.left      = lf + '%';
+  pGrate.style.transform = `scale(${sc}) rotate(${rot}deg)`;
+  pGrate.style.opacity   = 1 - gp * .94;
+
+  // Grater shake
+  graterSvg.classList.toggle('shaking', p > .06 && p < .7);
+
+  // Shreds
+  const d = p - lastS2p;
+  if (d > .002 && p > .04) {
+    const r = graterSvg.getBoundingClientRect();
+    spawnShreds(r.left, r.top, r.width, r.height, Math.min(3, Math.ceil(d * 28)));
+  }
+  lastS2p = p;
+
+  // Pile: 0.46→0.87
+  pileP = ease(map(p, .46, .87));
+
+  // Pile text: 0.82→1.0
+  pileTxt.style.opacity = map(p, .82, 1.0);
+}
+
+function animS3(p) {
+  if (!expFired && p > .04) { expFired = true; boom(); }
+  // CTA: 0.22→0.60
+  const cp = ease(map(p, .22, .60));
+  ctaBtn.style.opacity        = cp;
+  ctaBtn.style.transform      = `scale(${.78 + cp * .22})`;
+  ctaBtn.style.pointerEvents  = cp > .45 ? 'auto' : 'none';
+}
+
+// ─── MAIN UPDATE ──────────────────────────────────────
+
+function updateAll(t) {
+  // Crossfade windows
+  // S1: visible 0→0.38, fade out 0.28→0.38
+  // S2: fade in 0.31→0.40, visible →0.62, fade out 0.62→0.70
+  // S3: fade in 0.64→0.72
+  const o1 = t < .28 ? 1 : map(t, .28, .38, 1, 0);
+  const o2 = t < .31 ? 0 : (t < .40 ? map(t, .31, .40) :
+             (t < .62 ? 1 : map(t, .62, .70, 1, 0)));
+  const o3 = t < .64 ? 0 : map(t, .64, .72);
+
+  s1.style.opacity = o1;
+  s2.style.opacity = o2;
+  s3.style.opacity = o3;
+
+  // Run animations
+  animS1(clamp(t / .32));
+  if (t > .28) animS2(clamp((t - .33) / .34));
+  if (t > .62) animS3(clamp((t - .66) / .34));
+
+  // Scroll arrow
+  saEl.style.opacity = t > .91 ? map(t, .91, 1.0, 1, 0) : 1;
+}
+
+// ─── SCROLL ───────────────────────────────────────────
+function getT() {
+  const max = document.body.scrollHeight - innerHeight;
+  return max > 0 ? clamp(scrollY / max) : 0;
+}
+
+window.addEventListener('scroll', () => updateAll(getT()), { passive: true });
+updateAll(0);
+</script>
+</body>
+</html>
